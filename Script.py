@@ -230,7 +230,7 @@ Bʏ @Hell_King_69_Bot"""
 Iᴅ : <code>{}</code>
 Nᴀᴍᴇ : {}
 
-Mᴇꜱꜱᴀɢᴇ : <b>{}</b>"""
+Mᴇꜱꜱᴀɢᴇ : <b>`{}`</b>"""
 
     # PLESE DO NOT REMOVE ANY CREDITS ❤️‍🩹
     CREDITS_TXT = """<b>
@@ -249,7 +249,7 @@ Mᴇꜱꜱᴀɢᴇ : <b>{}</b>"""
 """ 
    # PLEASE DO NOT REMOVE ANY CREDITS ❤️‍🩹
     
-    CAPTION = """ 📂 <i><a href="https://t.me/The_hell_king_movie_group">{file_name}</a></i>\n\n"""
+    CAPTION = """ ```📂: <i><a href="https://t.me/The_hell_king_movie_group">{file_name}</a></i>\n\n```"""
 
     IMDB_TEMPLATE_TXT = """
 <b>ʜᴇʏ {message.from_user.mention}, ʜᴇʀᴇ ɪꜱ ᴛʜᴇ ʀᴇꜱᴜʟᴛꜱ ꜰᴏʀ ʏᴏᴜʀ ǫᴜᴇʀʏ {search}.
