@@ -139,67 +139,30 @@
 
 
 from __future__ import unicode_literals
+
 import os
 import requests
 import asyncio
-import wget
 from pyrogram import filters, Client
 from pyrogram.types import Message
 from youtube_search import YoutubeSearch
 from youtubesearchpython import SearchVideos
 from yt_dlp import YoutubeDL
-import sys
-import re
-
-# ANSI escape codes for coloring
-RED = '\033[91m'
-GREEN = '\033[92m'
-RESET = '\033[0m'
-
-def clean_percent_string(percent_str):
-    match = re.search(r'([\d\.]+)%', percent_str)
-    if match:
-        return float(match.group(1))
-    return 0.0
-
-def progress_hook(d, message):
-    if d['status'] == 'downloading':
-        percent_str = d['_percent_str'].strip()
-        percent = clean_percent_string(percent_str)
-        
-        # Progress bar length
-        bar_length = 30
-        filled_length = int(bar_length * percent // 100)
-        
-        # Create the progress bar: green for completed, red for remaining
-        bar = GREEN + '█' * filled_length + RED + '-' * (bar_length - filled_length) + RESET
-
-        # Print the progress bar without extra text
-        sys.stdout.write(f"\rDownloading: [{bar}] {percent:.1f}%")
-        sys.stdout.flush()
-    
-    elif d['status'] == 'finished':
-        print(f"\nDownload completed: {d['filename']}")
-        asyncio.run(message.edit(f"Download completed: {d['filename']}"))
 
 @Client.on_message(filters.command(['song', 'mp3']) & filters.private)
 async def song(client, message):
     user_id = message.from_user.id 
     user_name = message.from_user.first_name 
-    rpk = "[" + user_name + "](tg://user?id=" + str(user_id) + ")"
-    query = ' '.join(message.command[1:])  # Take input from user
+    rpk = f"[{user_name}](tg://user?id={user_id})"
+    query = ' '.join(message.command[1:])
     print(query)
-    
     m = await message.reply(f"**ѕєαrchíng чσur ѕσng...!\n {query}**")
-    ydl_opts = {
-        "format": "bestaudio[ext=m4a]",
-        "progress_hooks": [lambda d: progress_hook(d, m)]
-    }
-    
+    ydl_opts = {"format": "bestaudio[ext=m4a]", "cookiefile": "path/to/your/cookies.txt"}  # Update with your cookie path
+
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
         link = f"https://youtube.com{results[0]['url_suffix']}"
-        title = results[0]["title"][:40]       
+        title = results[0]["title"][:40]
         thumbnail = results[0]["thumbnails"][0]
         thumb_name = f'thumb{title}.jpg'
         thumb = requests.get(thumbnail, allow_redirects=True)
@@ -218,11 +181,7 @@ async def song(client, message):
             ydl.process_info(info_dict)
 
         cap = "**BY›› [VJ NETWORKS™](https://t.me/vj_bots)**"
-        secmul, dur, dur_arr = 1, 0, duration.split(':')
-        for i in range(len(dur_arr)-1, -1, -1):
-            dur += (int(dur_arr[i]) * secmul)
-            secmul *= 60
-        
+        dur = sum(int(x) * 60 ** i for i, x in enumerate(reversed(duration.split(':'))))  # Convert duration to seconds
         await message.reply_audio(
             audio_file,
             caption=cap,            
@@ -242,7 +201,7 @@ async def song(client, message):
     except Exception as e:
         print(e)
 
-def get_text(message: Message) -> [None, str]:
+def get_text(message: Message) -> [None,str]:
     text_to_return = message.text
     if message.text is None:
         return None
@@ -259,7 +218,6 @@ async def vsong(client, message: Message):
     pablo = await client.send_message(message.chat.id, f"**𝙵𝙸𝙽𝙳𝙸𝙽𝙶 𝚈𝙾𝚄𝚁 𝚅𝙸𝙳𝙴𝙾** `{urlissed}`")
     if not urlissed:
         return await pablo.edit("Example: /video Your video link")     
-
     search = SearchVideos(f"{urlissed}", offset=1, mode="dict", max_results=1)
     mi = search.result()
     mio = mi["search_result"]
@@ -270,7 +228,6 @@ async def vsong(client, message: Message):
     await asyncio.sleep(0.6)
     url = mo
     sedlyf = wget.download(kekme)
-    
     opts = {
         "format": "best",
         "addmetadata": True,
@@ -282,7 +239,8 @@ async def vsong(client, message: Message):
         "outtmpl": "%(id)s.mp4",
         "logtostderr": False,
         "quiet": True,
-        "progress_hooks": [lambda d: progress_hook(d, pablo)],
+        "cookiefile": "path/to/your/cookies.txt",  # Update with your cookie path
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
     }
     
     try:
@@ -308,5 +266,3 @@ async def vsong(client, message: Message):
     for files in (sedlyf, file_stark):
         if files and os.path.exists(files):
             os.remove(files)
-
-
