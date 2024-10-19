@@ -157,7 +157,7 @@ async def song(client, message):
     query = ' '.join(message.command[1:])
     print(query)
     m = await message.reply(f"**ѕєαrchíng чσur ѕσng...!\n {query}**")
-    ydl_opts = {"format": "bestaudio[ext=m4a]", "cookiefile": "path/to/your/cookies.txt"}  # Update with your cookie path
+    ydl_opts = {"format": "bestaudio[ext=m4a]", "cookiefile": "plugins/Extra/cookie.txt"}  # Update with your cookie path
 
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
@@ -239,7 +239,7 @@ async def vsong(client, message: Message):
         "outtmpl": "%(id)s.mp4",
         "logtostderr": False,
         "quiet": True,
-        "cookiefile": "path/to/your/cookies.txt",  # Update with your cookie path
+        "cookiefile": "plugins/Extra/cookie.txt",  # Update with your cookie path
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
     }
     
