@@ -2,12 +2,12 @@ from __future__ import unicode_literals
 import os
 import requests
 import asyncio
+import sys
 from pyrogram import filters, Client
 from pyrogram.types import Message
 from youtube_search import YoutubeSearch
 from youtubesearchpython import SearchVideos
 from yt_dlp import YoutubeDL
-import sys
 
 # Define the progress bar
 def progress_bar(current, total):
@@ -15,8 +15,7 @@ def progress_bar(current, total):
     progress = current / total
     red_length = int(bar_length * (1 - progress))
     green_length = bar_length - red_length
-    bar = f"[{'█' * green_length}{'-' * red_length}] {progress * 100:.1f}%"
-    return bar
+    return f"[{'█' * green_length}{'-' * red_length}] {progress * 100:.1f}%"
 
 # Update the output
 def hook(d):
@@ -34,7 +33,12 @@ async def song(client, message):
     user_name = message.from_user.first_name
     query = ' '.join(message.command[1:])
     m = await message.reply(f"**Searching your song...!\n {query}**")
-    ydl_opts = {"format": "bestaudio[ext=m4a]", "progress_hooks": [hook]}
+
+    ydl_opts = {
+        "format": "bestaudio[ext=m4a]",
+        "progress_hooks": [hook],
+        "cookiefile": "cookies.txt",  # Add your cookies file here
+    }
 
     audio_file = None  # Initialize variable
     try:
@@ -42,10 +46,13 @@ async def song(client, message):
         link = f"https://youtube.com{results[0]['url_suffix']}"
         title = results[0]["title"][:40]
         thumbnail = results[0]["thumbnails"][0]
-        thumb_name = f'thumb{title}.jpg'
+
+        # Fetch and save the thumbnail
+        thumb_name = f'thumb_{title}.jpg'
         thumb = requests.get(thumbnail, allow_redirects=True)
         open(thumb_name, 'wb').write(thumb.content)
-        performer = f"[VJ NETWORKS™]"
+
+        performer = "[VJ NETWORKS™]"
         duration = results[0]["duration"]
     except Exception as e:
         print(str(e))
@@ -94,7 +101,7 @@ async def vsong(client, message: Message):
     if not urlissed:
         return await pablo.edit("Example: /video Your video link")
     
-    search = SearchVideos(f"{urlissed}", offset=1, mode="dict", max_results=1)
+    search = SearchVideos(urlissed, offset=1, mode="dict", max_results=1)
     mi = search.result()
     mio = mi["search_result"]
     mo = mio[0]["link"]
@@ -103,9 +110,10 @@ async def vsong(client, message: Message):
     kekme = f"https://img.youtube.com/vi/{fridayz}/hqdefault.jpg"
     await asyncio.sleep(0.6)
     url = mo
+
+    # Fetch and save the thumbnail
     sedlyf = requests.get(kekme).content
     thumb_name = f"thumb_{fridayz}.jpg"
-    
     with open(thumb_name, "wb") as thumb_file:
         thumb_file.write(sedlyf)
 
@@ -117,9 +125,11 @@ async def vsong(client, message: Message):
         "geo_bypass": True,
         "nocheckcertificate": True,
         "postprocessors": [{"key": "FFmpegVideoConvertor", "preferredformat": "mp4"}],
-        "outtmpl": "%(id)s.mp4",
+        "outtmpl": f"{fridayz}.mp4",
         "progress_hooks": [hook],
+        "cookiefile": "cookies.txt",  # Add your cookies file here
     }
+    
     try:
         with YoutubeDL(opts) as ytdl:
             ytdl_data = ytdl.extract_info(url, download=True)
